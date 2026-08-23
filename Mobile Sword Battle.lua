@@ -17,7 +17,7 @@ local OffsetY = -1
 local OffsetZ = 5
 
 -- 추가 회전
-local RotationX = 90
+local RotationX = 0
 local RotationY = 0
 local RotationZ = 0
 

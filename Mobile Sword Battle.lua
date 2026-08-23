@@ -4,38 +4,24 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
---==================================================
--- 설정
---==================================================
-
 local Enabled = false
 local ExcludeFriends = true
 
--- 상대 HRP 기준 위치
 local OffsetX = 0
 local OffsetY = -1
 local OffsetZ = 5
 
--- 추가 회전
 local RotationX = 0
 local RotationY = 0
 local RotationZ = 0
 
 local STEP = 0.5
 
---==================================================
--- 기존 GUI 제거
---==================================================
-
 local OldGui = PlayerGui:FindFirstChild("LegTeleportGui")
 
 if OldGui then
 	OldGui:Destroy()
 end
-
---==================================================
--- GUI
---==================================================
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "LegTeleportGui"
@@ -54,10 +40,6 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 10)
 MainCorner.Parent = MainFrame
 
---==================================================
--- 제목
---==================================================
-
 local Title = Instance.new("TextLabel")
 Title.Name = "Title"
 Title.Size = UDim2.new(1, -50, 0, 40)
@@ -69,10 +51,6 @@ Title.TextSize = 20
 Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = MainFrame
-
---==================================================
--- 닫기
---==================================================
 
 local CloseButton = Instance.new("TextButton")
 CloseButton.Name = "CloseButton"
@@ -89,10 +67,6 @@ local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(0, 6)
 CloseCorner.Parent = CloseButton
 
---==================================================
--- 공통 버튼
---==================================================
-
 local function StyleButton(Button)
 	Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 	Button.TextColor3 = Color3.new(1, 1, 1)
@@ -104,9 +78,6 @@ local function StyleButton(Button)
 	Corner.Parent = Button
 end
 
---==================================================
--- TP 버튼
---==================================================
 
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "ToggleButton"
@@ -116,9 +87,6 @@ ToggleButton.Parent = MainFrame
 
 StyleButton(ToggleButton)
 
---==================================================
--- 친구 버튼
---==================================================
 
 local FriendButton = Instance.new("TextButton")
 FriendButton.Name = "FriendButton"
@@ -128,9 +96,6 @@ FriendButton.Parent = MainFrame
 
 StyleButton(FriendButton)
 
---==================================================
--- TextBox 기반 값 조절
---==================================================
 
 local ValueBoxes = {}
 
@@ -170,8 +135,6 @@ local function CreateValueBox(Name, Y, Getter, Setter)
 	Corner.Parent = Box
 
 	ValueBoxes[Name] = Box
-
-	-- 입력 완료
 	Box.FocusLost:Connect(function()
 
 		local Number = tonumber(Box.Text)
@@ -180,16 +143,11 @@ local function CreateValueBox(Name, Y, Getter, Setter)
 			Setter(Number)
 			Box.Text = tostring(Number)
 		else
-			-- 잘못 입력하면 기존 값으로 복구
 			Box.Text = tostring(Getter())
 		end
 
 	end)
 end
-
---==================================================
--- 위치
---==================================================
 
 local PositionTitle = Instance.new("TextLabel")
 PositionTitle.Size = UDim2.new(1, -20, 0, 25)
@@ -236,11 +194,6 @@ CreateValueBox(
 	end
 )
 
-
---==================================================
--- 회전
---==================================================
-
 local RotationTitle = Instance.new("TextLabel")
 RotationTitle.Size = UDim2.new(1, -20, 0, 25)
 RotationTitle.Position = UDim2.new(0, 10, 0, 255)
@@ -285,33 +238,26 @@ CreateValueBox(
 		RotationZ = Value
 	end
 )
---==================================================
--- GUI 업데이트
---==================================================
 
 local function UpdateGUI()
 	if Enabled then
-		ToggleButton.Text = "TP : ON"
+		ToggleButton.Text = "이동: ON"
 		ToggleButton.BackgroundColor3 =
 			Color3.fromRGB(50, 170, 80)
 	else
-		ToggleButton.Text = "TP : OFF"
+		ToggleButton.Text = "이동: OFF"
 		ToggleButton.BackgroundColor3 =
 			Color3.fromRGB(170, 50, 50)
 	end
 
 	if ExcludeFriends then
-		FriendButton.Text = "친구 제외 : ON"
+		FriendButton.Text = "친구 제외: ON"
 	else
-		FriendButton.Text = "친구 제외 : OFF"
+		FriendButton.Text = "친구 제외: OFF"
 	end
 end
 
 UpdateGUI()
-
---==================================================
--- 버튼
---==================================================
 
 ToggleButton.MouseButton1Click:Connect(function()
 	Enabled = not Enabled
@@ -326,8 +272,6 @@ end)
 FriendButton.MouseButton1Click:Connect(function()
 	ExcludeFriends = not ExcludeFriends
 
-	-- 친구 제외 설정이 바뀌면
-	-- 현재 타겟도 다시 검사
 	CurrentTarget = nil
 
 	UpdateGUI()
@@ -337,10 +281,6 @@ CloseButton.MouseButton1Click:Connect(function()
 	Enabled = false
 	ScreenGui:Destroy()
 end)
-
---==================================================
--- GUI 드래그
---==================================================
 
 local Dragging = false
 local DragStart
@@ -388,10 +328,6 @@ UserInputService.InputChanged:Connect(function(Input)
 
 end)
 
---==================================================
--- 친구 확인
---==================================================
-
 local function IsFriend(Player)
 
 	if not Player then
@@ -410,10 +346,6 @@ local function IsFriend(Player)
 
 	return false
 end
-
---==================================================
--- 타겟 검색
---==================================================
 
 local function GetTargets()
 
@@ -477,10 +409,6 @@ local function GetTargets()
 	return Targets
 end
 
---==================================================
--- 타겟 유효성
---==================================================
-
 local function IsTargetValid(Target)
 
 	if not Target then
@@ -505,8 +433,6 @@ local function IsTargetValid(Target)
 		return false
 	end
 
-	-- 친구 제외가 켜진 상태에서
-	-- 현재 타겟이 친구가 된 경우도 제외
 	if ExcludeFriends and Target.Player then
 
 		if IsFriend(Target.Player) then
@@ -518,9 +444,6 @@ local function IsTargetValid(Target)
 	return true
 end
 
---==================================================
--- TP
---==================================================
 local function TeleportBehind(Target)
 
 	local Character = LocalPlayer.Character
@@ -539,10 +462,6 @@ local function TeleportBehind(Target)
 		return
 	end
 
-	--========================================
-	-- 위치
-	--========================================
-
 	local LocalOffset = Vector3.new(
 		OffsetX,
 		OffsetY,
@@ -552,10 +471,6 @@ local function TeleportBehind(Target)
 	local WorldPosition =
 		TargetRoot.CFrame:PointToWorldSpace(LocalOffset)
 
-	--========================================
-	-- 상대를 바라보는 방향
-	--========================================
-
 	local Direction =
 		TargetRoot.Position - WorldPosition
 
@@ -564,10 +479,6 @@ local function TeleportBehind(Target)
 	end
 
 	Direction = Direction.Unit
-
-	--========================================
-	-- 땅 기준으로 상대를 바라보는 방향 계산
-	--========================================
 
 	local FlatDirection = Vector3.new(
 		Direction.X,
@@ -581,9 +492,6 @@ local function TeleportBehind(Target)
 		FlatDirection = FlatDirection.Unit
 	end
 
-	--========================================
-	-- 기본 방향
-	--========================================
 
 	local BaseCFrame =
 		CFrame.lookAt(
@@ -592,10 +500,6 @@ local function TeleportBehind(Target)
 			Vector3.new(0, 1, 0)
 		)
 
-	--========================================
-	-- 회전
-	--========================================
-
 	local RotationCFrame =
 		CFrame.fromEulerAnglesXYZ(
 			math.rad(RotationX),
@@ -603,33 +507,13 @@ local function TeleportBehind(Target)
 			math.rad(RotationZ)
 		)
 
-	--========================================
-	-- 최종
-	--========================================
-
 	MyRoot.CFrame =
 		BaseCFrame * RotationCFrame
 end
 
---==================================================
--- 현재 타겟
---==================================================
-
 CurrentTarget = nil
 
---==================================================
--- 메인 루프
---==================================================
-
---==================================================
--- 현재 타겟
---==================================================
-
 local CurrentTarget = nil
-
---==================================================
--- 메인 루프
---==================================================
 
 task.spawn(function()
 
@@ -661,10 +545,6 @@ task.spawn(function()
 	end
 
 end)
-
---==================================================
--- 값 변경 감지
---==================================================
 
 task.spawn(function()
 	while ScreenGui.Parent do

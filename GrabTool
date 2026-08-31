@@ -1,0 +1,42 @@
+local speaker = game.Players.LocalPlayer
+local humanoid
+local rootPart
+local grabToolsEnabled = false  -- 칼 주는 기능 활성화 여부
+local killAllEnabled = false   -- 킬올 기능 활성화 여부
+
+local localizedText = {
+    ["ko-kr"] = {
+        WelcomeMessage = "환영합니다! 칼을 빠르게 줍니다.",
+        GrabToolMessage = "칼을 잡았습니다!",
+        KillAllMessage = "모든 플레이어를 공격합니다!",
+        DropToolMessage = "모든 도구를 버렸습니다!"
+    },
+    ["en-us"] = {
+        WelcomeMessage = "Welcome! Grabbing tools quickly.",
+        GrabToolMessage = "You grabbed the tool!",
+        KillAllMessage = "Attacking all players!",
+        DropToolMessage = "Dropped all tools!"
+    }
+}
+
+local locale = speaker and speaker.LocaleId or "en-us"
+print(localizedText[locale].WelcomeMessage)
+
+local function grabToolsFast()
+    local character = speaker.Character
+    if not character then return end
+
+    humanoid = character:FindFirstChildWhichIsA("Humanoid")
+    rootPart = character:FindFirstChild("HumanoidRootPart")
+    
+    if not humanoid or not rootPart then return end
+
+    for _, child in ipairs(workspace:GetChildren()) do
+        if child:IsA("Tool") and child:FindFirstChild("Handle") then
+            humanoid:EquipTool(child)
+            print(localizedText[locale].GrabToolMessage)
+        end
+    end
+end
+
+grabToolsFast()
